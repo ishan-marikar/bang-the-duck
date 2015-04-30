@@ -18,7 +18,7 @@ class Duck:
 min_delay = 1.5
 max_delay = 5.0
 botname = "CookieBot"
-kill_commands = [".bang"]
+kill_commands = [".bang", ".pewpewpew"]
 free_commands = [".befree", ".pokeball"]
 all_ducks = {
 	"\_.o<" : Duck.EVIL
