@@ -16,7 +16,7 @@ class Duck:
 
 """ Configurations """
 min_delay = 1.5
-max_delay = 8.0
+max_delay = 5.0
 botname = "CookieBot"
 kill_commands = [".bang"]
 free_commands = [".befree", ".pokeball"]
