@@ -58,6 +58,44 @@ all_ducks = {
     }
 
 
+# The method we call to "humanise"
+def humanise():
+    delay = random.uniform(min_delay, max_delay)
+    print "\002Delaying for %d seconds" % delay
+    time.sleep(delay)
+
+
+# What do we do with the duck?
+def process_duck(duck, current_channel):
+    # Check what kind of duck it is.
+    # If the duck is EVIL:
+    if all_ducks[current_channel][duck] == Duck.EVIL:
+        # Pick a random kill command
+        completeMessage = "say %s" % random.choice(kill_commands[current_channel])
+        # Delay it for a few seconds so we make it seem more human like
+        humanise()
+        print "\002Killing the evil duck on %s" % current_channel
+        # Send the command
+        hexchat.command(completeMessage)
+    # If the duck is GOOD:
+    elif all_ducks[current_channel][duck] == Duck.GOOD:
+        completeMessage = "say %s" % random.choice(free_commands[current_channel])
+        print "\002Freeing the good duck on %s" % current_channel
+        humanise()
+        hexchat.command(completeMessage)
+    # .. or if the duck is neither EVIL or GOOD
+    elif all_ducks[current_channel][duck] == Duck.NEUTRAL:
+        print "\002Found neutral duck on %s" % current_channel
+        # Make an empty list to store the commands
+        all_commands = []
+        # Add both the kill and free commands to our list
+        all_commands.extend(free_commands[current_channel])
+        all_commands.extend(kill_commands[current_channel])
+        completeMessage = "say %s" % random.choice(all_commands)
+        humanise()
+        hexchat.command(completeMessage)
+
+
 def check_duck(word, word_eol, userdata):
     """ Check the messages to see if it actually contains the duck """
     # nick, message = word
@@ -76,45 +114,13 @@ def check_duck(word, word_eol, userdata):
                     for duck in all_ducks[current_channel]:
                         # If the bot in the list exists in the message
                         if duck in message:
-                            # Check what kind of duck it is.
-                            # If the duck is EVIL:
-                            if all_ducks[current_channel][duck] == Duck.EVIL:
-                                # Pick a random kill command
-                                completeMessage = "say %s" % random.choice(kill_commands[current_channel])
-                                # Delay it for a few seconds so we make it seem more human like
-                                simulate_humanism()
-                                print "\002Killing the evil duck on %s" % current_channel
-                                # Send the command
-                                hexchat.command(completeMessage)
-                            # If the duck is GOOD:
-                            elif all_ducks[current_channel][duck] == Duck.GOOD:
-                                completeMessage = "say %s" % random.choice(free_commands[current_channel])
-                                print "\002Freeing the good duck on %s" % current_channel
-                                simulate_humanism()
-                                hexchat.command(completeMessage)
-                            # .. or if the duck is neither EVIL or GOOD
-                            elif all_ducks[current_channel][duck] == Duck.NEUTRAL:
-                                print "\002Found neutral duck on %s" % current_channel
-                                # Make an empty list to store the commands
-                                all_commands = []
-                                # Add both the kill and free commands to our list
-                                all_commands.extend(free_commands[current_channel])
-                                all_commands.extend(kill_commands[current_channel])
-                                completeMessage = "say %s" % random.choice(all_commands)
-                                simulate_humanism()
-                                hexchat.command(completeMessage)
+                            # Let us process the duck
+                            process_duck(duck, current_channel)
     # Silently ignore any errors we come across, not really good practice, but meh.
-    except:
+    except Exception:
         pass
     # Let hexchat know that it shouldn't do anything with the existing text event
     return hexchat.EAT_NONE
-
-
-# The method we call to "humanise"
-def simulate_humanism():
-    delay = random.uniform(min_delay, max_delay)
-    print "\002Delaying for %d seconds" % delay
-    time.sleep(delay)
 
 
 # This is the method that first gets called when the it detects a channel message
